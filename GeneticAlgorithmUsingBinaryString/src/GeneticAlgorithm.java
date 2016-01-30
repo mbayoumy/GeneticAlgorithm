@@ -33,8 +33,13 @@ public class GeneticAlgorithm {
 		//generate initial population
 
 		ArrayList<Configuration> population = initialPopulationCreation();
-
-		for (int i = 1; i < numberOfIterations; i++) {
+		
+		int countFitnessChange = 0;
+		double current,previous = 0;
+		int i = 1;
+		while(i < numberOfIterations &&countFitnessChange < 2) {
+			
+			
 
 			double totalFitness = 0.0;
 
@@ -44,7 +49,7 @@ public class GeneticAlgorithm {
 			}
 
 			double averageFitness = totalFitness / populationSize;
-			System.out.println("Generation average:  " +averageFitness);
+		
 
 			for (Configuration c : population) {
 
@@ -69,10 +74,11 @@ public class GeneticAlgorithm {
 			ArrayList<Configuration> newGeneration = new ArrayList<>(populationSize);
 			int numOfIndividualsKept = (int) ((1 - crossoverRate) * populationSize);
 			newGeneration.addAll(population.subList(0, numOfIndividualsKept));
-			System.out.println(numOfIndividualsKept);
+			
+			
+			
 			// Crossover
 			int numOfIndividualsFromCrossover = (int) Math.round(crossoverRate * populationSize);
-			System.out.println(numOfIndividualsFromCrossover);
 
 			int counter = 0;
 			for (int c = 0; c <= numOfIndividualsFromCrossover; c++) {
@@ -96,10 +102,7 @@ public class GeneticAlgorithm {
 						+ parent1.getChromosomes().substring(crossSection, 10);
 				child2.setConfiguration(new StringBuilder(child2Binary));
 				child2.calculateFitness();
-			
-			//	System.out.println("parents:(" + parent1.getChromosomes() + ") (" + parent2.getChromosomes()
-			//			+ ") Child2: " + child2.getChromosomes() + " Child1" + child1.getChromosomes());
-
+		
 				newGeneration.add(child1);
 				counter++;
 				if (counter == numOfIndividualsFromCrossover) {
@@ -114,10 +117,7 @@ public class GeneticAlgorithm {
 			}
 			
 			
-		//	for (Configuration b: newGeneration){
-		//		System.out.println(b.getChromosomes());
-		//	}
-
+	
 			// mutation
 			
 			int numberOfIndividualsMutated = (int) Math.round(populationSize * mutationRate);
@@ -129,8 +129,11 @@ public class GeneticAlgorithm {
 				
 				int indexChosen = 0 ;
 				boolean isNewIndividual = false;
+				
 				while(!isNewIndividual){
+					
 				indexChosen = rand.nextInt((populationSize -1 - 0) + 1) + 0;
+				
 				if(!alreadyMutatedIndividuals.contains(indexChosen)){
 					isNewIndividual = true;
 				}		
@@ -140,15 +143,12 @@ public class GeneticAlgorithm {
 				int chromosomemutated = rand.nextInt(10);
 				int binaryValue = rand.nextInt((1 - 0) + 1) + 0;
 				
-				//System.out.println("The indivdual: "+ newGeneration.get(indexChosen).getChromosomes() +"   index: "+ indexChosen + " "
-				//		+ " chromosomeindex:  " + chromosomemutated +"  binary value:  "+ binaryValue);
-				
+			
 				
 				Configuration mutatedIndividual =  newGeneration.get(indexChosen);
 				mutatedIndividual.SetChromosome(chromosomemutated, binaryValue);
 				mutatedIndividual.calculateFitness();
 				
-			//	System.out.println(mutatedIndividual.getChromosomes());
 				newGeneration.set(indexChosen, mutatedIndividual);
 				
 				alreadyMutatedIndividuals.add(indexChosen);
@@ -160,14 +160,29 @@ public class GeneticAlgorithm {
 			
 			mutationRate = mutationRate / 2;
 			
-		
+			//if the fitness does not change then exit loop
+			if(i== 1){
+				current = population.get(0).getFitness();
+				previous = population.get(0).getFitness();
+			}
+			else{
+				current = population.get(0).getFitness();
+				
+				if(current == previous){
+					countFitnessChange++;
+				}
+				else{
+					countFitnessChange =0;
+				}
+				previous = current;
+			}
 			
-
+			i++;
 		}
 		
 		Configuration bestSolution = population.get(0);
-		System.out.println("Best Configuration: Chormosomes" + bestSolution.getChromosomes()+
-				"   height and diameter "+ bestSolution.getIntHeight() +"::" + bestSolution.getIntDiameter() +"   Fitness:  " + 
+		System.out.println("Best Solution: Chormosomes(" + bestSolution.getChromosomes()+
+				")   height and diameter "+ bestSolution.getIntHeight() +"::" + bestSolution.getIntDiameter() +"   Fitness:  " + 
 				bestSolution.getFitness());
 		
 		

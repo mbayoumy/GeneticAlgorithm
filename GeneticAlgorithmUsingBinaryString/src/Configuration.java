@@ -50,6 +50,7 @@ public class Configuration {
 		
 		double constraint1 = (Math.PI * Math.pow(diameter, 2) * height) / 4;
 	
+		//constraint violation which increases its fitness making it an infeasible solution.
 		if (constraint1 < 300) {
 			cost += 100;
 		}
@@ -63,9 +64,6 @@ public class Configuration {
 	
 	public double getFitness(){
 		return cost;
-	}
-	public double fitnessSin(){
-		return Math.sin(cost);
 	}
 
 	public int convertToInt(String binary) {
